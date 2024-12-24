@@ -1,0 +1,249 @@
+FROM python:2.7-slim
+WORKDIR /app
+COPY first.py /app/
+CMD ["python","first.py"]
+
+
+docker build -t python27-trial .
+docker run python27-trial
+docker login
+docker tag python27-trial npk62/python27-trial
+docker push npk62/python27-trial
+
+to verify
+docker ps
+
+
+Docker file for Java
+# Use the official OpenJDK image as the base image
+FROM openjdk:11-jdk-slim
+
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the Java source code into the container
+COPY HelloWorld.java /app/
+
+# Compile the Java program
+RUN javac HelloWorld.java
+
+# Run the Java program
+CMD ["java", "HelloWorld"]
+
+
+
+
+
+Ex.No: 10
+Create a Static Website and Containerize, Build & Serve it using Docker.
+Tasks:
+1.	Create a Simple Static Website (index.html file) with basic HTML content.
+2.	Write/create a Dockerfile to serve the website using Nginx.
+3.	Build the Docker Image
+4.	Run the container:
+5.	Access the Website using a Browser
+
+Aim: Create a static website to demonstrate the containerization with Docker for creating a simple static website.
+
+Description /Algorithm:
+Step 1: Create a Simple Static Website (index.html)
+1.	Create a New Directory for the Project:
+o	Open your terminal and create a new directory to store your project files.
+bash
+Copy code
+mkdir my-static-website
+cd my-static-website
+2.	Create the index.html File:
+o	In the my-static-website directory, create a file named index.html.
+bash
+Copy code
+touch index.html
+3.	Add Basic HTML Content:
+o	Open the index.html file in your favorite text editor (e.g., VSCode, Sublime Text, or simply nano/vim).
+o	Add the following HTML content to create a simple webpage.
+html
+Copy code
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Static Website</title>
+</head>
+<body>
+    <h1>Welcome to My Static Website</h1>
+    <p>This is a simple website served using Docker and Nginx.</p>
+</body>
+</html>
+4.	Save and Close the File:
+o	Save the file and close the editor.
+________________________________________
+Step 2: Write/Create a Dockerfile to Serve the Website Using Nginx
+1.	Create a Dockerfile:
+o	In the my-static-website directory, create a file named Dockerfile.
+bash
+Copy code
+touch Dockerfile
+2.	Write the Dockerfile:
+o	Open the Dockerfile in your editor and add the following content:
+Dockerfile
+Copy code
+# Use the official Nginx image from Docker Hub
+FROM nginx:alpine
+
+# Copy the index.html file into the Nginx default public directory
+COPY index.html /usr/share/nginx/html/
+
+# Expose port 80 to allow external access to the website
+EXPOSE 80
+
+# Run Nginx in the foreground (default command for the Nginx container)
+CMD ["nginx", "-g", "daemon off;"]
+Explanation:
+o	FROM nginx:alpine: This uses the official Nginx image based on Alpine Linux, which is lightweight and ideal for serving static websites.
+o	COPY index.html /usr/share/nginx/html/: This copies the index.html file into the directory where Nginx looks for static files.
+o	EXPOSE 80: This exposes port 80, which is the default HTTP port, so the website can be accessed from outside the container.
+o	CMD ["nginx", "-g", "daemon off;"]: This tells Docker to start Nginx in the foreground when the container runs.
+3.	Save the Dockerfile:
+o	Save the file and close the editor.
+________________________________________
+Step 3: Build the Docker Image
+1.	Open Terminal:
+o	Navigate to the directory where your Dockerfile and index.html file are located (the my-static-website directory).
+2.	Build the Docker Image:
+o	Run the following command to build the Docker image. You can name your image static-website:
+bashdoc
+Copy code
+docker build -t static-website .
+
+
+Explanation:
+o	docker build -t static-website .: This tells Docker to build an image from the current directory (.) and tag it as static-website.
+3.	Wait for the Build to Complete:
+o	Docker will pull the Nginx image (if not already cached), copy the files, and create the new image. This may take a minute or two.
+________________________________________
+Step 4: Run the Container
+1.	Run the Docker Container:
+o	After the image has been built, run it as a container using the following command:
+bash
+Copy code
+docker run -d -p 8080:80 static-website
+Explanation:
+o	docker run: Starts a new container.
+o	-d: Runs the container in detached mode (in the background).
+o	-p 8080:80: Maps port 80 in the container to port 8080 on your host machine (so you can access it via localhost:8080).
+o	static-website: The name of the image you just built.
+2.	Check the Running Container:
+o	To verify that the container is running, use the following command:
+bash
+Copy code
+docker ps
+o	This will list all running containers, and you should see the static-website container in the list with port 8080 exposed.
+________________________________________
+Step 5: Access the Website Using a Browser
+1.	Open Your Browser:
+o	Open your browser and type the following URL in the address bar:
+bash
+Copy code
+http://localhost:8080
+2.	View the Static Website:
+o	You should see the simple static website that you created in index.html. The page should display the message: "Welcome to My Static Website" and the paragraph content.
+________________________________________
+Step 6: Optional - Clean Up Docker Resources
+If you're done with the website and want to stop and remove the container, follow these steps:
+1.	Stop the Running Container:
+o	Use the following command to stop the container:
+bash
+Copy code
+docker stop <container_id>
+o	You can find the container_id by running:
+bash
+Copy code
+docker ps
+2.	Remove the Stopped Container:
+o	Once the container is stopped, you can remove it with:
+bash
+Copy code
+docker rm <container_id>
+3.	Remove the Docker Image (optional):
+o	If you no longer need the Docker image, you can remove it with:
+bash
+Copy code
+docker rmi static-website
+________________________________________
+Summary:
+1.	You created a simple static website with HTML.
+2.	You wrote a Dockerfile to containerize the website using Nginx.
+3.	You built the Docker image and ran the container.
+4.	You accessed the website in your browser at http://localhost:8080.
+
+
+# Use the official Python image from Docker Hub
+FROM python:3.9-slim
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the current directory contents into the container
+COPY . /app
+
+# Install required Python packages
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Expose port 5000 (default port for Flask)
+EXPOSE 5000
+
+# Run the Flask application
+CMD ["python", "app.py"]
+
+
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+</head>
+<body>
+    <h1>To-Do List</h1>
+    <form action="/add" method="POST">
+        <input type="text" name="todo" placeholder="Enter a new task" required>
+        <button type="submit">Add</button>
+    </form>
+    <ul>
+        {% for todo in todos %}
+            <li>{{ todo }} <a href="/delete/{{ loop.index0 }}">Delete</a></li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
+
+
+# app.py
+from flask import Flask, render_template, request, redirect, url_for
+
+app = Flask(_name_)
+
+# Sample in-memory storage for the to-do list
+todos = []
+
+@app.route('/')
+def index():
+    return render_template('index.html', todos=todos)
+
+@app.route('/add', methods=['POST'])
+def add():
+    todo = request.form.get('todo')
+    if todo:
+        todos.append(todo)
+    return redirect(url_for('index'))
+
+@app.route('/delete/<int:index>')
+def delete(index):
+    if 0 <= index < len(todos):
+        todos.pop(index)
+    return redirect(url_for('index'))
+
+if _name_ == '_main_':
+    app.run(debug=True, host='0.0.0.0')
